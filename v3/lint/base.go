@@ -23,6 +23,7 @@ import (
 )
 
 // LintInterface is implemented by each Lint.
+// @deprecated use CertLintInterface instead?
 type LintInterface interface { //nolint:revive
 	// CheckApplies runs once per certificate. It returns true if the Lint should
 	// run on the given certificate. If CheckApplies returns false, the Lint
@@ -33,6 +34,10 @@ type LintInterface interface { //nolint:revive
 	// Execute() is the body of the lint. It is called for every certificate for
 	// which CheckApplies() returns true.
 	Execute(c *x509.Certificate) *LintResult
+}
+
+type CertLintInterface interface {
+	LintInterface
 }
 
 // Configurable lints return a pointer into a struct that they wish to receive their configuration into.
