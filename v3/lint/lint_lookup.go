@@ -21,8 +21,8 @@ import (
 
 var (
 	// Verify that the interface holds
-	_ linterLookup = linterLookupImpl{}
-	_ CertificateLinterLookup = certificateLinterLookupImpl{}
+	_ linterLookup               = linterLookupImpl{}
+	_ CertificateLinterLookup    = certificateLinterLookupImpl{}
 	_ RevocationListLinterLookup = revocationListLinterLookupImpl{}
 )
 
@@ -41,7 +41,7 @@ type linterLookupImpl struct {
 	// equivalent to collecting the keys from lintsByName into a slice and sorting
 	// them lexicographically.
 	lintNames []string
-	sources []LintSource
+	sources   []LintSource
 }
 
 // Names returns the list of lint names registered for the lint type T.
@@ -61,9 +61,9 @@ func (lookup linterLookupImpl) Sources() SourceList {
 
 func newLinterLookup() linterLookupImpl {
 	return linterLookupImpl{
-		RWMutex: new(sync.RWMutex),
+		RWMutex:   new(sync.RWMutex),
 		lintNames: make([]string, 0),
-		sources: make([]LintSource, 0),
+		sources:   make([]LintSource, 0),
 	}
 }
 
@@ -83,9 +83,9 @@ type CertificateLinterLookup interface {
 type certificateLinterLookupImpl struct {
 	linterLookupImpl
 	// lintsByName is a map of all registered lints by name.
-	lintsByName map[string]*CertificateLint
+	lintsByName   map[string]*CertificateLint
 	lintsBySource map[LintSource][]*CertificateLint
-	lints []*CertificateLint
+	lints         []*CertificateLint
 }
 
 // ByName returns the Lint previously registered under the given name with
@@ -128,10 +128,10 @@ func (lookup *certificateLinterLookupImpl) register(lint *CertificateLint, name 
 
 func newCertificateLintLookup() certificateLinterLookupImpl {
 	return certificateLinterLookupImpl{
-		linterLookupImpl: newLinterLookup() ,
-		lintsByName: make(map[string]*CertificateLint),
-		lintsBySource: make(map[LintSource][]*CertificateLint),
-		lints: make([]*CertificateLint, 0),
+		linterLookupImpl: newLinterLookup(),
+		lintsByName:      make(map[string]*CertificateLint),
+		lintsBySource:    make(map[LintSource][]*CertificateLint),
+		lints:            make([]*CertificateLint, 0),
 	}
 }
 
@@ -151,9 +151,9 @@ type RevocationListLinterLookup interface {
 type revocationListLinterLookupImpl struct {
 	linterLookupImpl
 	// lintsByName is a map of all registered lints by name.
-	lintsByName map[string]*RevocationListLint
+	lintsByName   map[string]*RevocationListLint
 	lintsBySource map[LintSource][]*RevocationListLint
-	lints []*RevocationListLint
+	lints         []*RevocationListLint
 }
 
 // ByName returns the Lint previously registered under the given name with
@@ -196,9 +196,9 @@ func (lookup *revocationListLinterLookupImpl) register(lint *RevocationListLint,
 
 func newRevocationListLintLookup() revocationListLinterLookupImpl {
 	return revocationListLinterLookupImpl{
-		linterLookupImpl: newLinterLookup() ,
-		lintsByName: make(map[string]*RevocationListLint),
-		lintsBySource: make(map[LintSource][]*RevocationListLint),
-		lints: make([]*RevocationListLint, 0),
+		linterLookupImpl: newLinterLookup(),
+		lintsByName:      make(map[string]*RevocationListLint),
+		lintsBySource:    make(map[LintSource][]*RevocationListLint),
+		lints:            make([]*RevocationListLint, 0),
 	}
 }

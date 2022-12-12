@@ -241,7 +241,7 @@ func (r *registryImpl) CertificateLints() CertificateLinterLookup {
 	return &r.certificateLints
 }
 
-func (r *registryImpl) RevocationListLints() RevocationListLinterLookup{
+func (r *registryImpl) RevocationListLints() RevocationListLinterLookup {
 	return &r.revocationListLints
 }
 
