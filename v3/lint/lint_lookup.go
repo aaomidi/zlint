@@ -41,7 +41,7 @@ type linterLookupImpl struct {
 	// equivalent to collecting the keys from lintsByName into a slice and sorting
 	// them lexicographically.
 	lintNames []string
-	sources   []LintSource
+	sources   map[LintSource]struct{}
 }
 
 // Names returns the list of lint names registered for the lint type T.
@@ -56,14 +56,18 @@ func (lookup linterLookupImpl) Names() []string {
 func (lookup linterLookupImpl) Sources() SourceList {
 	lookup.RLock()
 	defer lookup.RUnlock()
-	return lookup.sources
+	var list SourceList
+	for lintSource, _ := range lookup.sources {
+		list = append(list, lintSource)
+	}
+	return list
 }
 
 func newLinterLookup() linterLookupImpl {
 	return linterLookupImpl{
 		RWMutex:   new(sync.RWMutex),
 		lintNames: make([]string, 0),
-		sources:   make([]LintSource, 0),
+		sources:   map[LintSource]struct{}{},
 	}
 }
 
@@ -121,6 +125,8 @@ func (lookup *certificateLinterLookupImpl) register(lint *CertificateLint, name 
 	lookup.lints = append(lookup.lints, lint)
 	lookup.lintNames = append(lookup.lintNames, name)
 	lookup.lintsByName[name] = lint
+
+	lookup.sources[source] = struct{}{}
 	lookup.lintsBySource[source] = append(lookup.lintsBySource[source], lint)
 	sort.Strings(lookup.lintNames)
 	return nil
@@ -189,6 +195,8 @@ func (lookup *revocationListLinterLookupImpl) register(lint *RevocationListLint,
 	lookup.lints = append(lookup.lints, lint)
 	lookup.lintNames = append(lookup.lintNames, name)
 	lookup.lintsByName[name] = lint
+
+	lookup.sources[source] = struct{}{}
 	lookup.lintsBySource[source] = append(lookup.lintsBySource[source], lint)
 	sort.Strings(lookup.lintNames)
 	return nil
