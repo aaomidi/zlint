@@ -116,6 +116,9 @@ func (lookup certificateLinterLookupImpl) Lints() []*CertificateLint {
 }
 
 func (lookup *certificateLinterLookupImpl) register(lint *CertificateLint, name string, source LintSource) error {
+	if name == "" {
+		return errEmptyName
+	}
 	lookup.RLock()
 	defer lookup.RUnlock()
 
@@ -186,6 +189,9 @@ func (lookup revocationListLinterLookupImpl) Lints() []*RevocationListLint {
 }
 
 func (lookup *revocationListLinterLookupImpl) register(lint *RevocationListLint, name string, source LintSource) error {
+	if name == "" {
+		return errEmptyName
+	}
 	lookup.RLock()
 	defer lookup.RUnlock()
 
