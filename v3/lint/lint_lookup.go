@@ -57,7 +57,7 @@ func (lookup linterLookupImpl) Sources() SourceList {
 	lookup.RLock()
 	defer lookup.RUnlock()
 	var list SourceList
-	for lintSource, _ := range lookup.sources {
+	for lintSource := range lookup.sources {
 		list = append(list, lintSource)
 	}
 	return list
