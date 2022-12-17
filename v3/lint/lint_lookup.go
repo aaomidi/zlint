@@ -21,9 +21,9 @@ import (
 
 var (
 	// Verify that the interface holds
-	_ linterLookup               = linterLookupImpl{}
-	_ CertificateLinterLookup    = certificateLinterLookupImpl{}
-	_ RevocationListLinterLookup = revocationListLinterLookupImpl{}
+	_ linterLookup               = &linterLookupImpl{}
+	_ CertificateLinterLookup    = &certificateLinterLookupImpl{}
+	_ RevocationListLinterLookup = &revocationListLinterLookupImpl{}
 )
 
 type linterLookup interface {
@@ -36,7 +36,7 @@ type linterLookup interface {
 }
 
 type linterLookupImpl struct {
-	*sync.RWMutex
+	sync.RWMutex
 	// lintNames is a sorted list of all of the registered lint names. It is
 	// equivalent to collecting the keys from lintsByName into a slice and sorting
 	// them lexicographically.
@@ -45,7 +45,7 @@ type linterLookupImpl struct {
 }
 
 // Names returns the list of lint names registered for the lint type T.
-func (lookup linterLookupImpl) Names() []string {
+func (lookup *linterLookupImpl) Names() []string {
 	lookup.RLock()
 	defer lookup.RUnlock()
 	return lookup.lintNames
@@ -53,7 +53,7 @@ func (lookup linterLookupImpl) Names() []string {
 
 // Sources returns a SourceList of registered LintSources. The list is not
 // sorted but can be sorted by the caller with sort.Sort() if required.
-func (lookup linterLookupImpl) Sources() SourceList {
+func (lookup *linterLookupImpl) Sources() SourceList {
 	lookup.RLock()
 	defer lookup.RUnlock()
 	var list SourceList
@@ -65,7 +65,6 @@ func (lookup linterLookupImpl) Sources() SourceList {
 
 func newLinterLookup() linterLookupImpl {
 	return linterLookupImpl{
-		RWMutex:   new(sync.RWMutex),
 		lintNames: make([]string, 0),
 		sources:   map[LintSource]struct{}{},
 	}
@@ -94,7 +93,7 @@ type certificateLinterLookupImpl struct {
 
 // ByName returns the Lint previously registered under the given name with
 // Register, or nil if no matching lint name has been registered.
-func (lookup certificateLinterLookupImpl) ByName(name string) *CertificateLint {
+func (lookup *certificateLinterLookupImpl) ByName(name string) *CertificateLint {
 	lookup.RLock()
 	defer lookup.RUnlock()
 	return lookup.lintsByName[name]
@@ -102,14 +101,14 @@ func (lookup certificateLinterLookupImpl) ByName(name string) *CertificateLint {
 
 // BySource returns a list of registered lints that have the same LintSource as
 // provided (or nil if there were no such lints).
-func (lookup certificateLinterLookupImpl) BySource(s LintSource) []*CertificateLint {
+func (lookup *certificateLinterLookupImpl) BySource(s LintSource) []*CertificateLint {
 	lookup.RLock()
 	defer lookup.RUnlock()
 	return lookup.lintsBySource[s]
 }
 
 // Lints returns a list of registered lints.
-func (lookup certificateLinterLookupImpl) Lints() []*CertificateLint {
+func (lookup *certificateLinterLookupImpl) Lints() []*CertificateLint {
 	lookup.RLock()
 	defer lookup.RUnlock()
 	return lookup.lints
@@ -167,7 +166,7 @@ type revocationListLinterLookupImpl struct {
 
 // ByName returns the Lint previously registered under the given name with
 // Register, or nil if no matching lint name has been registered.
-func (lookup revocationListLinterLookupImpl) ByName(name string) *RevocationListLint {
+func (lookup *revocationListLinterLookupImpl) ByName(name string) *RevocationListLint {
 	lookup.RLock()
 	defer lookup.RUnlock()
 	return lookup.lintsByName[name]
@@ -175,14 +174,14 @@ func (lookup revocationListLinterLookupImpl) ByName(name string) *RevocationList
 
 // BySource returns a list of registered lints that have the same LintSource as
 // provided (or nil if there were no such lints).
-func (lookup revocationListLinterLookupImpl) BySource(s LintSource) []*RevocationListLint {
+func (lookup *revocationListLinterLookupImpl) BySource(s LintSource) []*RevocationListLint {
 	lookup.RLock()
 	defer lookup.RUnlock()
 	return lookup.lintsBySource[s]
 }
 
 // Lints returns a list of registered lints.
-func (lookup revocationListLinterLookupImpl) Lints() []*RevocationListLint {
+func (lookup *revocationListLinterLookupImpl) Lints() []*RevocationListLint {
 	lookup.RLock()
 	defer lookup.RUnlock()
 	return lookup.lints
