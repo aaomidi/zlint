@@ -121,7 +121,7 @@ func (lookup *certificateLinterLookupImpl) register(lint *CertificateLint, name 
 	lookup.RLock()
 	defer lookup.RUnlock()
 
-	if _, ok := lookup.lintsByName[name]; ok {
+	if existing := lookup.lintsByName[name]; existing != nil {
 		return &errDuplicateName{name}
 	}
 	lookup.lints = append(lookup.lints, lint)
